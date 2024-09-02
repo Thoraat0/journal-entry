@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import amosh.Journal.repository.userEntriesRepo;
 import amosh.Journal.Entity.userEntries;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -32,6 +33,7 @@ public class entryService {
         }
 
     public void saveEntries(userEntries myEntries, String username){
+        myEntries.setDate(LocalDateTime.now());
         users find = userService.findByUSername(username);
         userEntries saved = userEntriesRepo.save(myEntries);
         find.getUserEntries().add(saved);

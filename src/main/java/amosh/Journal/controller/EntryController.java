@@ -28,7 +28,7 @@ public class EntryController {
 
         try {
 
-            myEntries.setDate(LocalDateTime.now());
+
             entryService.saveEntries(myEntries,username);
             return new ResponseEntity<>(entryService,HttpStatus.CREATED);
         }
