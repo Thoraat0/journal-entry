@@ -30,7 +30,11 @@ public class entryService {
     public userEntries getById(ObjectId id){
 
         return userEntriesRepo.findById(id).orElse(null);
-        }
+    }
+
+    public void saveEntries(userEntries myEntries){
+        userEntriesRepo.save(myEntries);
+    }
 
     public void saveEntries(userEntries myEntries, String username){
         myEntries.setDate(LocalDateTime.now());
@@ -40,7 +44,10 @@ public class entryService {
         userService.saveEntries(find);
     }
 
-    public void deleteById(ObjectId id){
+    public void deleteById(ObjectId id, String username){
+        users byUSername = userService.findByUSername(username);
+        byUSername.getUserEntries().removeIf(x->x.getId().equals(id));
+        userService.saveEntries(byUSername);
         userEntriesRepo.deleteById(id);
     }
 }

@@ -2,6 +2,7 @@ package amosh.Journal.controller;
 
 
 import amosh.Journal.Entity.userEntries;
+import amosh.Journal.Entity.users;
 import amosh.Journal.service.entryService;
 import amosh.Journal.service.userService;
 import org.bson.types.ObjectId;
@@ -27,8 +28,6 @@ public class EntryController {
     public ResponseEntity<?> createEntry(@RequestBody userEntries myEntries,@PathVariable String username){
 
         try {
-
-
             entryService.saveEntries(myEntries,username);
             return new ResponseEntity<>(entryService,HttpStatus.CREATED);
         }
@@ -38,11 +37,6 @@ public class EntryController {
 
     }
 
-    @GetMapping
-    public ResponseEntity<?>get(){
-        List<userEntries> all = entryService.getAll();
-        return new ResponseEntity<>(all, HttpStatus.OK);
-    }
 
 
     @GetMapping("/id/{id}")
@@ -54,23 +48,33 @@ public class EntryController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/id/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable ObjectId id){
+    @DeleteMapping("/id/{id}/{username}")
+    public ResponseEntity<?> deleteById(@PathVariable ObjectId id, @PathVariable String username){
         userEntries byId = entryService.getById(id);
+//        users byUSername = userService.findByUSername(username);
 
-        if(byId!=null){
-        entryService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);}
-        return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        try {
+            entryService.deleteById(id,username);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/id/{id}")
     public ResponseEntity<?> update(@RequestBody userEntries newEntries, @PathVariable ObjectId id){
-//        userEntries byId = entryService.getById(id);
-//        byId.setContent(newEntries.getContent()!=null && !newEntries.getContent().equals("")? newEntries.getContent(): byId.getContent() );
-//        byId.setTitle( newEntries.getTitle()!=null && !newEntries.getTitle().equals("")?  newEntries.getTitle() :byId.getTitle() );
-//        entryService.saveEntries(byId, username);
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            userEntries byId = entryService.getById(id);
+            byId.setContent(newEntries.getContent()!=null && !newEntries.getContent().equals("")? newEntries.getContent(): byId.getContent() );
+            byId.setTitle( newEntries.getTitle()!=null && !newEntries.getTitle().equals("")?  newEntries.getTitle() :byId.getTitle() );
+            entryService.saveEntries(byId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
