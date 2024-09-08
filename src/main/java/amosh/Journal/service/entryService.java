@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import amosh.Journal.repository.userEntriesRepo;
 import amosh.Journal.Entity.userEntries;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class entryService {
@@ -36,6 +38,7 @@ public class entryService {
         userEntriesRepo.save(myEntries);
     }
 
+    @Transactional
     public void saveEntries(userEntries myEntries, String username){
         myEntries.setDate(LocalDateTime.now());
         users find = userService.findByUSername(username);
@@ -44,10 +47,13 @@ public class entryService {
         userService.saveEntries(find);
     }
 
+    @Transactional
     public void deleteById(ObjectId id, String username){
         users byUSername = userService.findByUSername(username);
         byUSername.getUserEntries().removeIf(x->x.getId().equals(id));
         userService.saveEntries(byUSername);
         userEntriesRepo.deleteById(id);
     }
+
+
 }
